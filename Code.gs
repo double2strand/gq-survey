@@ -19,20 +19,26 @@ var COLUMNS = [
   ['q3_other',     'Q3 Other'],
   ['q4',           'Q4 Interest level'],
   ['q4_other',     'Q4 Other'],
-  ['q5',           'Q5 Max price'],
-  ['q6',           'Q6 Self-sample comfort'],
-  ['q7',           'Q7 Provider recommendation'],
-  ['q7_other',     'Q7 Other'],
-  ['q8',           'Q8 Disease risks of interest'],
-  ['q9',           'Q9 Main concern'],
-  ['q9_other',     'Q9 Other'],
+  ['q5',           'Q6 Max price'],
+  ['q6',           'Q7 Self-sample comfort'],
+  ['q7',           'Q9 Provider recommendation'],
+  ['q7_other',     'Q9 Other'],
+  ['q8',           'Q10 Disease risks of interest'],
+  ['q9',           'Q11 Main concern'],
+  ['q9_other',     'Q11 Other'],
   ['utm_source',   'UTM source'],
   ['utm_medium',   'UTM medium'],
   ['utm_campaign', 'UTM campaign'],
   ['src',          'Src'],
   ['user_agent',   'User agent'],
   ['referrer',     'Referrer'],
-  ['received_at',  'Received at (server)']
+  ['received_at',  'Received at (server)'],
+  // Added Oct 2026 — appended AFTER the original columns so rows already in the
+  // sheet stay aligned. Payload keys q1-q9 are unchanged; headers show the new numbering.
+  ['features',       'Q5 Most valuable features'],
+  ['features_other', 'Q5 Other'],
+  ['blood_barrier',  'Q8 Blood sample barrier'],
+  ['q8_other',       'Q10 Other']
 ];
 
 var MAX_CELL_LENGTH = 2000;

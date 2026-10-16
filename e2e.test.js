@@ -147,9 +147,9 @@ async function run() {
   assert.strictEqual(p.q2, 'Ancestry DNA testing; Other'); assert.strictEqual(p.q2_other, 'gut microbiome');
   assert.strictEqual(p.q3, 'Slowing down aging'); assert.strictEqual(p.q3_other, '');
   assert.strictEqual(p.q4, 'Neutral'); assert.strictEqual(p.q5, '$251-$500'); assert.strictEqual(p.q6, 'Blood; Saliva');
-  assert.strictEqual(p.q7, ''); assert.strictEqual(p.q8, 'Cancer; Autoimmune'); assert.strictEqual(p.q9, 'Other'); assert.strictEqual(p.q9_other, 'cost');
+  assert.strictEqual(p.q7, ''); assert.strictEqual(p.blood_barrier, ''); assert.strictEqual(p.features, ''); assert.strictEqual(p.q8, 'Cancer; Autoimmune'); assert.strictEqual(p.q9, 'Other'); assert.strictEqual(p.q9_other, 'cost');
   assert.ok(p.user_agent.length > 0);
-  for (const k of ['utm_source', 'utm_medium', 'utm_campaign', 'src', 'referrer', 'q4_other', 'q7_other']) assert.ok(k in p, 'payload has ' + k);
+  for (const k of ['utm_source', 'utm_medium', 'utm_campaign', 'src', 'referrer', 'q4_other', 'q7_other', 'q8_other', 'features_other']) assert.ok(k in p, 'payload has ' + k);
   console.log('✓ flow A (no endpoint): Next/Prev, focus, other auto-select, Enter safe, keyboard, Done -> thank-you, localStorage backup');
   await page.close();
 

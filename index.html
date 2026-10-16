@@ -10,7 +10,7 @@
   <meta property="og:site_name" content="GeneQuanta">
   <meta property="og:title" content="GeneQuanta Epigenetic Health &amp; Longevity Survey">
   <meta property="og:description" content="Take our 5-7 minute anonymous survey and help shape a new platform that uses epigenetic profiling to monitor biological aging, disease risk and health trajectories.">
-  <meta property="og:url" content="https://tw599.github.io/gq-survey/">
+  <meta property="og:url" content="https://double2strand.github.io/gq-survey/">
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="GeneQuanta Epigenetic Health &amp; Longevity Survey">
   <meta name="twitter:description" content="Take our 5-7 minute anonymous survey and help shape a new platform for epigenetic health and longevity profiling.">
@@ -117,6 +117,19 @@
             <input type="text" class="other-text" name="q4_other" id="q4_other" aria-label="Other level of interest (please specify)" maxlength="500" data-opt="q4-other-opt">
           </div>
         </fieldset>
+
+        <fieldset class="question" data-q="features">
+          <legend class="q-title">5. Which of the following features are the most valuable to you?</legend>
+          <div class="options">
+            <label class="opt"><input type="checkbox" name="features" value="Biological age prediction"><span>Biological age prediction</span></label>
+            <label class="opt"><input type="checkbox" name="features" value="System-specific aging analysis"><span>System-specific aging analysis (such as liver, kidney, lung, brain, etc.)</span></label>
+            <label class="opt"><input type="checkbox" name="features" value="Disease (terminating or chronic) risk prediction"><span>Disease (terminating or chronic) risk prediction</span></label>
+            <label class="opt"><input type="checkbox" name="features" value="Lifestyle impact monitoring"><span>Lifestyle impact monitoring (such as food, drug, dietary supplement, alcohol, exercise, etc.)</span></label>
+            <label class="opt"><input type="checkbox" name="features" value="Actionable lifestyle recommendations"><span>Actionable lifestyle recommendations</span></label>
+            <label class="opt"><input type="checkbox" name="features" value="Other" id="features-other-opt" data-other-for="features_other"><span>Other (please specify)</span></label>
+            <input type="text" class="other-text" name="features_other" id="features_other" aria-label="Other valuable feature (please specify)" maxlength="500" data-opt="features-other-opt">
+          </div>
+        </fieldset>
       </section>
 
       <!-- Screen 4 -->
@@ -124,7 +137,7 @@
         <h2 class="section-title" id="s4-title" tabindex="-1">Willingness to Pay &amp; Adoption</h2>
 
         <fieldset class="question" data-q="q5">
-          <legend class="q-title">5. Maximum price you would pay for a comprehensive epigenetic health report</legend>
+          <legend class="q-title">6. Maximum price you would pay for a comprehensive epigenetic health report</legend>
           <div class="options">
             <label class="opt"><input type="radio" name="q5" value="Less than $100"><span>Less than $100</span></label>
             <label class="opt"><input type="radio" name="q5" value="$100-$250"><span>$100-$250</span></label>
@@ -136,7 +149,7 @@
         </fieldset>
 
         <fieldset class="question" data-q="q6">
-          <legend class="q-title">6. Which of the following samples are you comfortable to take on your own?</legend>
+          <legend class="q-title">7. Which of the following samples are you comfortable to take on your own?</legend>
           <div class="options">
             <label class="opt"><input type="checkbox" name="q6" value="Blood"><span>Blood</span></label>
             <label class="opt"><input type="checkbox" name="q6" value="Saliva"><span>Saliva</span></label>
@@ -145,8 +158,19 @@
           </div>
         </fieldset>
 
+        <fieldset class="question" data-q="blood_barrier">
+          <legend class="q-title">8. How much of a barrier is a blood sample requirement?</legend>
+          <div class="options">
+            <label class="opt"><input type="radio" name="blood_barrier" value="Not a barrier"><span>Not a barrier</span></label>
+            <label class="opt"><input type="radio" name="blood_barrier" value="Minor"><span>Minor</span></label>
+            <label class="opt"><input type="radio" name="blood_barrier" value="Moderate"><span>Moderate</span></label>
+            <label class="opt"><input type="radio" name="blood_barrier" value="Major"><span>Major</span></label>
+            <label class="opt"><input type="radio" name="blood_barrier" value="Would stop me entirely"><span>Would stop me entirely</span></label>
+          </div>
+        </fieldset>
+
         <fieldset class="question" data-q="q7">
-          <legend class="q-title">7. Would you be more likely to use this if recommended by a healthcare provider?</legend>
+          <legend class="q-title">9. Would you be more likely to use this if recommended by a healthcare provider?</legend>
           <div class="options">
             <label class="opt"><input type="radio" name="q7" value="Yes"><span>Yes</span></label>
             <label class="opt"><input type="radio" name="q7" value="No"><span>No</span></label>
@@ -161,7 +185,7 @@
         <h2 class="section-title" id="s5-title" tabindex="-1">Specific Health Interests &amp; Concerns</h2>
 
         <fieldset class="question" data-q="q8">
-          <legend class="q-title">8. Which specific disease risks interest you most?</legend>
+          <legend class="q-title">10. Which specific disease risks interest you most?</legend>
           <div class="options">
             <label class="opt"><input type="checkbox" name="q8" value="Cardiovascular"><span>Cardiovascular</span></label>
             <label class="opt"><input type="checkbox" name="q8" value="Cancer"><span>Cancer</span></label>
@@ -169,11 +193,13 @@
             <label class="opt"><input type="checkbox" name="q8" value="Type 2 Diabetes"><span>Type 2 Diabetes</span></label>
             <label class="opt"><input type="checkbox" name="q8" value="Autoimmune"><span>Autoimmune</span></label>
             <label class="opt"><input type="checkbox" name="q8" value="Overall risk only"><span>Overall risk only</span></label>
+            <label class="opt"><input type="checkbox" name="q8" value="Other" id="q8-other-opt" data-other-for="q8_other"><span>Other (please specify)</span></label>
+            <input type="text" class="other-text" name="q8_other" id="q8_other" aria-label="Other disease risk (please specify)" maxlength="500" data-opt="q8-other-opt">
           </div>
         </fieldset>
 
         <fieldset class="question" data-q="q9">
-          <legend class="q-title">9. What concerns you most about commercial epigenetic tests?</legend>
+          <legend class="q-title">11. What concerns you most about commercial epigenetic tests?</legend>
           <div class="options">
             <label class="opt"><input type="radio" name="q9" value="Data privacy"><span>Data privacy</span></label>
             <label class="opt"><input type="radio" name="q9" value="Clinical validity"><span>Clinical validity</span></label>

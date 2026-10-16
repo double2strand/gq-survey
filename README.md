@@ -4,7 +4,7 @@ A free, standalone version of the GeneQuanta consumer research survey
 **"GeneQuanta Epigenetic Health & Longevity Profiling: Understanding Your Needs"**
 (mirrors the original SurveyMonkey survey). Responses go to a Google Sheet through a small Google Apps Script.
 
-**Live:** https://tw599.github.io/gq-survey/
+**Live:** https://double2strand.github.io/gq-survey/
 
 ## How it works
 - Plain HTML, CSS and vanilla JS. No build step. Hosted on GitHub Pages.

@@ -20,5 +20,5 @@ A **Responses** tab with headers is created automatically when the first respons
 ## Tracking channels
 Add tags to the link you share, and they will show up as columns in the sheet:
 
-- `https://tw599.github.io/gq-survey/?utm_source=linkedin&utm_medium=social&utm_campaign=launch`
-- `https://tw599.github.io/gq-survey/?src=reddit`
+- `https://double2strand.github.io/gq-survey/?utm_source=linkedin&utm_medium=social&utm_campaign=launch`
+- `https://double2strand.github.io/gq-survey/?src=reddit`

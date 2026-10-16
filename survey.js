@@ -5,8 +5,10 @@
   var TOTAL_QUESTION_SCREENS = 5; // screens 1-5; screen 6 is the thank-you page
   var STORAGE_KEY = 'gq_survey_responses';
   var REQUEST_TIMEOUT_MS = 10000;
-  var QUESTIONS = ['q1', 'q2', 'q3', 'q4', 'q5', 'q6', 'q7', 'q8', 'q9'];
-  var OTHER_FIELDS = ['q2_other', 'q3_other', 'q4_other', 'q7_other', 'q9_other'];
+  // Payload keys. q1-q9 keep their original keys (= Sheet columns) so existing data stays aligned;
+  // questions added in Oct 2026 use named keys. Displayed numbers are in index.html.
+  var QUESTIONS = ['q1', 'q2', 'q3', 'q4', 'features', 'q5', 'q6', 'blood_barrier', 'q7', 'q8', 'q9'];
+  var OTHER_FIELDS = ['q2_other', 'q3_other', 'q4_other', 'features_other', 'q7_other', 'q8_other', 'q9_other'];
   var URL_PARAMS = ['utm_source', 'utm_medium', 'utm_campaign', 'src'];
 
   var form = document.getElementById('survey');

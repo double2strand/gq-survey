@@ -63,8 +63,8 @@ assert.strictEqual(col('Timestamp'), payload.timestamp);
 assert.strictEqual(col('Response ID'), 'abc-123');
 assert.strictEqual(col('Q2 DTC tests used'), 'Ancestry DNA testing; Other');
 assert.strictEqual(col('Q2 Other'), 'gut microbiome');
-assert.strictEqual(col('Q5 Max price'), '$100-$250');
-assert.strictEqual(col('Q7 Other'), "'=HYPERLINK(\"x\")", 'formula injection neutralised');
+assert.strictEqual(col('Q6 Max price'), '$100-$250');
+assert.strictEqual(col('Q9 Other'), "'=HYPERLINK(\"x\")", 'formula injection neutralised');
 assert.strictEqual(col('UTM source'), 'linkedin');
 assert.strictEqual(col('Src'), 'tw');
 assert.strictEqual(col('User agent'), 'UA/1.0');
@@ -77,7 +77,7 @@ assert.strictEqual(log.locks, 1); assert.strictEqual(log.released, 1);
 ctx.doPost({ postData: { contents: JSON.stringify({ response_id: 'r2', q6: ['Blood', 'None'] }) } });
 assert.strictEqual(sh.rows.length, 3);
 assert.strictEqual(sh.rows[2][headers.indexOf('Q1 Health approach')], '');
-assert.strictEqual(sh.rows[2][headers.indexOf('Q6 Self-sample comfort')], 'Blood; None');
+assert.strictEqual(sh.rows[2][headers.indexOf('Q7 Self-sample comfort')], 'Blood; None');
 assert.strictEqual(log.inserted.length, 1);
 
 // 4. Bad input
@@ -93,7 +93,7 @@ assert.strictEqual(sh.rows.length, 3);
 
 // 6. Long values truncated
 ctx.doPost({ postData: { contents: JSON.stringify({ q9_other: 'a'.repeat(5000) }) } });
-assert.strictEqual(sh.rows[3][headers.indexOf('Q9 Other')].length, 2000);
+assert.strictEqual(sh.rows[3][headers.indexOf('Q11 Other')].length, 2000);
 
 // 7. Lock released even if append throws
 ({ ctx, sheets, log } = makeCtx());
