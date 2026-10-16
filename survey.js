@@ -150,8 +150,87 @@
     }
   }
 
+  /* ---------- validation ---------- */
+
+  function errorFor(fs) {
+    var inputs = fs.querySelectorAll('input[type="radio"], input[type="checkbox"]');
+    if (inputs.length) {
+      var anyChecked = Array.prototype.some.call(inputs, function (i) { return i.checked; });
+      if (!anyChecked) {
+        return inputs[0].type === 'checkbox' ? 'Please select at least one option.' : 'Please select an option.';
+      }
+      var others = fs.querySelectorAll('.other-text');
+      for (var k = 0; k < others.length; k++) {
+        var opt = document.getElementById(others[k].getAttribute('data-opt'));
+        if (opt && opt.checked && others[k].value.trim() === '') {
+          return { msg: 'Please specify your “Other” answer.', field: others[k] };
+        }
+      }
+      return '';
+    }
+    var text = fs.querySelector('input[type="text"], textarea');
+    if (text && text.value.trim() === '') return { msg: 'Please answer this question.', field: text };
+    return '';
+  }
+
+  function setError(fs, err) {
+    var msg = typeof err === 'string' ? err : err.msg;
+    var box = fs.querySelector('.q-error');
+    Array.prototype.forEach.call(fs.querySelectorAll('.other-text'), function (t) {
+      t.classList.remove('is-invalid'); t.removeAttribute('aria-invalid');
+    });
+    if (!msg) {
+      fs.classList.remove('has-error');
+      fs.removeAttribute('aria-invalid');
+      if (box) box.remove();
+      return;
+    }
+    if (!box) {
+      box = document.createElement('p');
+      box.className = 'q-error';
+      box.id = (fs.getAttribute('data-q') || 'q') + '-error';
+      box.setAttribute('role', 'alert');
+      fs.appendChild(box);
+      fs.setAttribute('aria-describedby', box.id);
+    }
+    box.textContent = msg;
+    fs.classList.add('has-error');
+    fs.setAttribute('aria-invalid', 'true');
+    if (err.field) { err.field.classList.add('is-invalid'); err.field.setAttribute('aria-invalid', 'true'); }
+  }
+
+  function screenQuestions(n) {
+    var scr = document.querySelector('.screen[data-screen="' + n + '"]');
+    return scr ? Array.prototype.slice.call(scr.querySelectorAll('fieldset.question')) : [];
+  }
+
+  // Returns true if every question on screen n is answered; otherwise marks errors.
+  function validateScreen(n) {
+    var first = null;
+    screenQuestions(n).forEach(function (fs) {
+      var err = errorFor(fs);
+      setError(fs, err);
+      if (err && !first) first = { fs: fs, err: err };
+    });
+    if (first) {
+      first.fs.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      var target = first.err.field || first.fs.querySelector('input');
+      if (target) { try { target.focus({ preventScroll: true }); } catch (e) { target.focus(); } }
+      return false;
+    }
+    return true;
+  }
+
+  // Clear (or update) an error as soon as the question is answered.
+  form.addEventListener('input', revalidate);
+  form.addEventListener('change', revalidate);
+  function revalidate(e) {
+    var fs = e.target.closest && e.target.closest('fieldset.question');
+    if (fs && fs.classList.contains('has-error')) setError(fs, errorFor(fs));
+  }
+
   btnNext.addEventListener('click', function () {
-    if (current < TOTAL_QUESTION_SCREENS) show(current + 1);
+    if (current < TOTAL_QUESTION_SCREENS && validateScreen(current)) show(current + 1);
   });
   btnPrev.addEventListener('click', function () {
     if (current > 1) show(current - 1);
@@ -184,6 +263,14 @@
   form.addEventListener('submit', function (e) {
     e.preventDefault();
     if (current !== TOTAL_QUESTION_SCREENS || submitting || submitted) return;
+    // Enforce every page (guards against skipping via devtools/API).
+    for (var s = 1; s <= TOTAL_QUESTION_SCREENS; s++) {
+      if (screenQuestions(s).some(function (fs) { return !!errorFor(fs); })) {
+        if (s !== current) show(s);
+        validateScreen(s);
+        return;
+      }
+    }
     submitting = true;
     btnDone.disabled = true;
     btnPrev.disabled = true;
@@ -222,6 +309,7 @@
   // Expose a tiny API for testing/debugging.
   window.GQSurvey = {
     buildPayload: buildPayload,
+    validateScreen: validateScreen,
     show: show,
     storageKey: STORAGE_KEY,
     get current() { return current; }

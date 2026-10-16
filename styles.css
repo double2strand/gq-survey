@@ -41,13 +41,17 @@ body {
 }
 .skip-link:focus { left: 8px; top: 8px; }
 
-.site-header { padding: 22px 0 6px; }
+.site-header { padding: 12px 0; background: #0b0b0d; margin-bottom: 8px; }
 .brand {
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  color: var(--green);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: #f4f5f6; /* wordmark colour (inline SVG uses currentColor) */
+  text-decoration: none;
 }
+.brand-mark { display: block; width: 46px; height: 40px; }
+.brand-word { display: block; width: 126px; height: 32px; }
+.brand:focus-visible { outline: 2px solid #9cc2e6; outline-offset: 4px; border-radius: 4px; }
 
 main { flex: 1; padding-bottom: 32px; }
 
@@ -145,6 +149,27 @@ p { margin: 0 0 14px; }
   background: #fff;
 }
 .other-text:focus { outline: 2px solid var(--green); outline-offset: 1px; border-color: var(--green); }
+
+/* Validation */
+.q-error {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #b3261e;
+  font-size: 14px;
+  font-weight: 600;
+  margin: 8px 0 0;
+}
+.q-error::before { content: "!"; display: inline-grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; background: #b3261e; color: #fff; font-size: 12px; }
+.question.has-error {
+  border-left: 4px solid #b3261e;
+  background: #fdf3f2;
+  padding: 12px 12px 12px 14px;
+  border-radius: 6px;
+}
+.question.has-error .q-title { float: left; width: 100%; } /* keep legend inside the padded box */
+.question.has-error .options { clear: both; }
+.other-text.is-invalid { border-color: #b3261e; outline: 1px solid #b3261e; }
 
 /* Navigation */
 .nav {
