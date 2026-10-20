@@ -42,3 +42,10 @@ node tests/code_gs.test.js                 # Apps Script logic with stubbed Spre
 npm i puppeteer-core && python3 -m http.server 8765 &
 node tests/e2e.test.js                     # headless Chrome end-to-end (set CHROME=/path/to/chrome)
 ```
+
+## Analytics dashboard
+
+`dashboard.html` (live: https://double2strand.github.io/gq-survey/dashboard.html) charts the responses.
+It reads them from the Apps Script web app (`GET ?action=stats&key=…`). The key is stored in the
+Script Property `DASHBOARD_KEY` (Project Settings → Script properties) and never in this repo.
+Preview with synthetic example data: `dashboard.html?demo=1`.

@@ -126,8 +126,90 @@ function doPost(e) {
   return jsonOut({ ok: true });
 }
 
-function doGet() {
-  return ContentService
-    .createTextOutput('GeneQuanta survey endpoint OK')
-    .setMimeType(ContentService.MimeType.TEXT);
+/* ---------- Read endpoint for dashboard.html ----------
+ * GET ?action=stats&key=SECRET[&callback=fn]
+ * SECRET lives in Script Properties under DASHBOARD_KEY (never in the repo).
+ * Columns are mapped by POSITION (COLUMNS order is exactly what doPost appends), so
+ * renamed/renumbered header text in the sheet does not matter, and rows written before
+ * the Oct 2026 columns existed simply have those fields empty.
+ * Response IDs, user agents and full referrer URLs are not returned (referrer -> host only).
+ */
+var DASHBOARD_KEY_PROPERTY = 'DASHBOARD_KEY';
+var STATS_EXCLUDE = { response_id: true, user_agent: true };
+
+function safeEquals(a, b) {
+  a = String(a); b = String(b);
+  var diff = a.length ^ b.length;
+  for (var i = 0; i < Math.max(a.length, b.length); i++) {
+    diff |= (a.charCodeAt(i % (a.length || 1)) || 0) ^ (b.charCodeAt(i % (b.length || 1)) || 0);
+  }
+  return diff === 0;
+}
+
+function cellToString(v) {
+  if (v === null || v === undefined) return '';
+  if (Object.prototype.toString.call(v) === '[object Date]') return isNaN(v.getTime()) ? '' : v.toISOString();
+  var s = String(v);
+  if (s.charAt(0) === "'") s = s.slice(1); // undo cleanCell formula guard
+  return s;
+}
+
+function referrerHost(v) {
+  var m = /^[a-z][a-z0-9+.-]*:\/\/([^\/?#:]+)/i.exec(v || '');
+  return m ? m[1].toLowerCase() : '';
+}
+
+/** Turn sheet values (incl. header row) into row objects keyed by payload key. */
+function rowsToRecords(values) {
+  var out = [];
+  for (var r = 1; r < values.length; r++) {
+    var row = values[r], rec = {}, any = false;
+    for (var c = 0; c < COLUMNS.length; c++) {
+      var k = COLUMNS[c][0];
+      if (STATS_EXCLUDE[k]) continue;
+      var v = cellToString(row[c]);
+      if (k === 'referrer') v = referrerHost(v);
+      rec[k] = v;
+      if (v !== '') any = true;
+    }
+    if (any) out.push(rec);
+  }
+  return out;
+}
+
+function getStats() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName(SHEET_NAME);
+  var values = sheet && sheet.getLastRow() > 0 ? sheet.getDataRange().getValues() : [];
+  return {
+    ok: true,
+    generated_at: new Date().toISOString(),
+    keys: COLUMNS.map(function (c) { return c[0]; }).filter(function (k) { return !STATS_EXCLUDE[k]; }),
+    rows: rowsToRecords(values)
+  };
+}
+
+function respond(obj, callback) {
+  if (callback && /^[A-Za-z_$][\w$]{0,63}$/.test(callback)) {
+    return ContentService.createTextOutput(callback + '(' + JSON.stringify(obj) + ');')
+      .setMimeType(ContentService.MimeType.JAVASCRIPT);
+  }
+  return jsonOut(obj);
+}
+
+function doGet(e) {
+  var p = (e && e.parameter) || {};
+  if (p.action !== 'stats') {
+    return ContentService
+      .createTextOutput('GeneQuanta survey endpoint OK')
+      .setMimeType(ContentService.MimeType.TEXT);
+  }
+  var secret = PropertiesService.getScriptProperties().getProperty(DASHBOARD_KEY_PROPERTY);
+  if (!secret) return respond({ ok: false, error: 'not configured: set Script Property ' + DASHBOARD_KEY_PROPERTY }, p.callback);
+  if (!p.key || !safeEquals(p.key, secret)) return respond({ ok: false, error: 'unauthorized' }, p.callback);
+  try {
+    return respond(getStats(), p.callback);
+  } catch (err) {
+    return respond({ ok: false, error: 'read failed: ' + err.message }, p.callback);
+  }
 }

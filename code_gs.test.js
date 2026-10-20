@@ -1,5 +1,5 @@
 const fs = require('fs'), vm = require('vm'), assert = require('assert');
-const src = fs.readFileSync(require('path').join(__dirname, '..', 'apps-script', 'Code.gs'), 'utf8');
+const src = fs.readFileSync(require('path').join(__dirname, 'Code.gs'), 'utf8');
 
 function makeCtx() {
   const log = { locks: 0, released: 0, flushes: 0, inserted: [] };
@@ -10,6 +10,7 @@ function makeCtx() {
       getLastRow() { return rows.length; },
       appendRow(r) { rows.push(r.slice()); },
       getRange(r, c, nr, nc) { const self = this; return { setFontWeight(w) { self.bold = [r, c, nr, nc, w]; return this; } }; },
+      getDataRange() { return { getValues: () => rows.map(r => r.slice()) }; },
       setFrozenRows(n) { this.frozen = n; } };
   }
   const ss = { getSheetByName: n => sheets[n] || null,
@@ -17,7 +18,8 @@ function makeCtx() {
   const ctx = {
     SpreadsheetApp: { getActiveSpreadsheet: () => ss, flush: () => { log.flushes++; } },
     LockService: { getScriptLock: () => ({ waitLock: () => { log.locks++; }, releaseLock: () => { log.released++; } }) },
-    ContentService: { MimeType: { JSON: 'json', TEXT: 'text' },
+    PropertiesService: { getScriptProperties: () => ({ getProperty: k => (k === 'DASHBOARD_KEY' ? ctx.__key : null) }) },
+  ContentService: { MimeType: { JSON: 'json', TEXT: 'text', JAVASCRIPT: 'js' },
       createTextOutput: t => ({ text: t, mime: null, setMimeType(m) { this.mime = m; return this; } }) },
   };
   vm.createContext(ctx);
@@ -104,4 +106,46 @@ assert.strictEqual(log.released, 1);
 // 8. doGet
 const g = ctx.doGet();
 assert.strictEqual(g.text, 'GeneQuanta survey endpoint OK');
+// 9. doGet stats: auth + mapping
+{
+  const m = makeCtx(); const c = m.ctx;
+  // not configured
+  let r = JSON.parse(c.doGet({ parameter: { action: 'stats', key: 'x' } }).text);
+  assert.strictEqual(r.ok, false); assert.ok(/not configured/.test(r.error));
+  c.__key = 's3cret-key';
+  r = JSON.parse(c.doGet({ parameter: { action: 'stats' } }).text);
+  assert.deepStrictEqual(r, { ok: false, error: 'unauthorized' }, 'missing key rejected');
+  r = JSON.parse(c.doGet({ parameter: { action: 'stats', key: 's3cret-kez' } }).text);
+  assert.strictEqual(r.error, 'unauthorized', 'wrong key rejected');
+  assert.ok(!('rows' in r));
+  // empty sheet
+  r = JSON.parse(c.doGet({ parameter: { action: 'stats', key: 's3cret-key' } }).text);
+  assert.strictEqual(r.ok, true); assert.deepStrictEqual(r.rows, []);
+  // new-style row + an OLD row (written before the 4 appended columns existed, i.e. shorter)
+  c.doPost({ postData: { contents: JSON.stringify(Object.assign({}, payload, {
+    features: 'Biological age prediction; Other', features_other: 'sleep', blood_barrier: 'Major', q8_other: 'kidney' })) } });
+  const sh2 = m.sheets.Responses;
+  const oldRow = sh2.rows[1].slice(0, 23); oldRow[2] = 'Neutral-old'; oldRow[0] = new Date('2026-10-01T10:00:00Z');
+  sh2.rows.push(oldRow);
+  const res = c.doGet({ parameter: { action: 'stats', key: 's3cret-key' } });
+  assert.strictEqual(res.mime, 'json');
+  r = JSON.parse(res.text);
+  assert.strictEqual(r.rows.length, 2);
+  const [n, o] = r.rows;
+  assert.strictEqual(n.features, 'Biological age prediction; Other'); assert.strictEqual(n.features_other, 'sleep');
+  assert.strictEqual(n.blood_barrier, 'Major'); assert.strictEqual(n.q8_other, 'kidney');
+  assert.strictEqual(n.q5, '$100-$250'); assert.strictEqual(n.q9, 'Data privacy');
+  assert.strictEqual(n.q7_other, '=HYPERLINK("x")', 'formula guard quote stripped on read');
+  assert.strictEqual(n.referrer, 'example.com', 'referrer reduced to host');
+  assert.ok(!('user_agent' in n) && !('response_id' in n), 'UA / response id not exposed');
+  assert.strictEqual(o.q1, 'Neutral-old'); assert.strictEqual(o.features, ''); assert.strictEqual(o.blood_barrier, '');
+  assert.strictEqual(o.timestamp, '2026-10-01T10:00:00.000Z', 'Date cells serialised');
+  // JSONP
+  const j = c.doGet({ parameter: { action: 'stats', key: 's3cret-key', callback: 'cb_1' } });
+  assert.strictEqual(j.mime, 'js'); assert.ok(j.text.startsWith('cb_1({'));
+  const bad = c.doGet({ parameter: { action: 'stats', key: 's3cret-key', callback: 'alert(1)//' } });
+  assert.strictEqual(bad.mime, 'json', 'unsafe callback ignored');
+  // plain GET unchanged
+  assert.strictEqual(c.doGet({ parameter: {} }).text, 'GeneQuanta survey endpoint OK');
+}
 console.log('Code.gs tests: all passed (' + headers.length + ' columns)');
